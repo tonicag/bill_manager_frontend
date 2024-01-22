@@ -1,0 +1,13 @@
+[BACKEND]
+Add pagination + searching for /products/all
+Add pagination + searching for /companies/all
+
+Add UPDATE, DELETE for product
+Add UPDATE for company
+Add UPDATE, DELETE for bills
+
+GET Products - only for the current User
+Get Bills - only for the current User
+
+[FRONTEND]
+Handle validation forms
