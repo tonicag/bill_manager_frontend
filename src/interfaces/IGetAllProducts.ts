@@ -1,4 +1,4 @@
-export default interface IGetAllProducts {
+export default interface IPaginationRequest {
   page?: number;
   itemsPerPage?: number;
   searchKey?: string;

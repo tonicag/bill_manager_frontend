@@ -7,8 +7,10 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import SearchableDropdown from "../components/SearchableDropdown";
 import ProductsService from "../services/ProductsService";
-import IGetAllProducts from "../interfaces/IGetAllProducts";
+import IPaginationRequest from "../interfaces/IGetAllProducts";
 import { useDebounce } from "usehooks-ts";
+import { CompanyDTO } from "../interfaces/CompanyDTO";
+import CompanyService from "../services/CompanyService";
 var options = [
   {
     label: "Company 1",
@@ -57,31 +59,49 @@ function formatDate(date = new Date()) {
 
 const AddNewBIll = () => {
   const [billEntries, setBillEntries] = useState<BillEntriesDTO[]>([]);
-  const [selectedCompany, setSelectedCompany] = useState<string | undefined>(
-    ""
+
+  const [productsSearchItems, setProductsSearchItems] = useState<ProductDTO[]>(
+    []
   );
+  const [companiesSearchItems, setCompaniesSearchItems] = useState<
+    CompanyDTO[]
+  >([]);
+
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO>();
+
   const [quantity, setQuantity] = useState<string>("");
 
-  const [productInput, setProductInput] = useState<string>("");
-  const [queryProducts, setQueryProducts] = useState<ProductDTO[]>([]);
+  const [productNameInput, setProductInput] = useState<string>("");
+  const [companyNameInput, setCompanyNameInput] = useState<string>("");
 
-  const debounceProducts = useDebounce<string>(productInput, 1000);
+  const debounceProducts = useDebounce<string>(productNameInput, 1000);
+  const debounceCompanies = useDebounce<string>(companyNameInput, 1000);
 
   const context = useContext(UserContext);
   const navigate = useNavigate();
 
-  const getProducts = async (query: IGetAllProducts) => {
+  const getProducts = async (query: IPaginationRequest) => {
     let response = await ProductsService.getAllProducts(query);
     if (response.isSuccess) {
-      setQueryProducts(response.result.items);
+      setProductsSearchItems(response.result.items);
     }
   };
 
+  const getCompanies = async (query: IPaginationRequest) => {
+    let response = await CompanyService.getAllCompanies(query);
+    if (response.isSuccess) {
+      setCompaniesSearchItems(response.result.items);
+    }
+  };
+
+  // Debouncers
   useEffect(() => {
-    console.log("testr");
-    getProducts({ searchKey: productInput });
+    getProducts({ searchKey: productNameInput });
   }, [debounceProducts]);
+
+  useEffect(() => {
+    getCompanies({ searchKey: companyNameInput });
+  }, [debounceCompanies]);
 
   return (
     <div className="w-full h-full flex bg-slate-100 overflow-y-auto ">
@@ -94,29 +114,15 @@ const AddNewBIll = () => {
         </label>
         <SearchableDropdown
           onInput={(val) => {
-            console.log(val);
+            setCompanyNameInput(val);
           }}
           onSelected={(o) => {
             console.log(o);
           }}
           placeholder={"Product name"}
-          options={[
-            { name: "Test", value: "1" },
-            { name: "Test", value: "2" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-            { name: "Test", value: "3" },
-          ]}
+          options={companiesSearchItems.map((q) => {
+            return { name: q.name || "Test", value: q.id! };
+          })}
         />
         <label className="block text-center text-xl font-medium text-gray-900 ">
           Products
@@ -131,7 +137,7 @@ const AddNewBIll = () => {
             console.log(o);
           }}
           placeholder={"Product name"}
-          options={queryProducts.map((q) => {
+          options={productsSearchItems.map((q) => {
             return { name: q.name!, value: q.id! };
           })}
         />

@@ -7,35 +7,20 @@ import { ProductDTO } from "../pages/Products";
 import { getTokenHeader } from "../util/getToken";
 import { queryBuilder } from "../util/queryBuilder";
 export const API_URL = `https://localhost:7010/`;
-export default class ProductsService {
-  public static async getAllProducts(
+export default class CompanyService {
+  public static async getAllCompanies(
     queryParams: IPaginationRequest
-  ): Promise<ResponseDTO<PaginationDTO<ProductDTO>>> {
+  ): Promise<ResponseDTO<PaginationDTO<CompanyDTO>>> {
     let query = queryBuilder(queryParams);
     console.log(query);
     try {
-      let response = await fetch(`${API_URL}api/product/all?${query}`, {
+      let response = await fetch(`${API_URL}api/company/all?${query}`, {
         headers: [["Content-Type", "application/json"], getTokenHeader()],
         method: "GET",
       });
       const result = (await response.json()) as ResponseDTO<
-        PaginationDTO<ProductDTO>
+        PaginationDTO<CompanyDTO>
       >;
-      return result;
-    } catch (e) {
-      return { isSuccess: false, message: "Error!" };
-    }
-  }
-  public static async createProduct(
-    product: ProductDTO
-  ): Promise<ResponseDTO<ProductDTO>> {
-    try {
-      let response = await fetch(`${API_URL}api/product/create`, {
-        headers: [["Content-Type", "application/json"], getTokenHeader()],
-        body: JSON.stringify(product),
-        method: "POST",
-      });
-      const result = (await response.json()) as ResponseDTO<ProductDTO>;
       return result;
     } catch (e) {
       return { isSuccess: false, message: "Error!" };
