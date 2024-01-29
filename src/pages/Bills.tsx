@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
-import CustomTable from "../components/Table";
-import { BillDto } from "../interfaces/Bill";
+import React, { useContext, useEffect, useState } from "react";
+import CustomTable from "../components/CustomTable";
+import { BillDTO } from "../interfaces/BillDTO";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import BillService from "../services/BillService";
+import DeleteIcon from "../icons/DeleteIcon";
+import { mapBillToTableRepresenation } from "../interfaces/IBillTableRepresentation";
 
-let bills_list: BillDto[] = [
+let bills_list: BillDTO[] = [
   {
     billId: "1",
     billEntries: [],
@@ -16,6 +19,18 @@ let bills_list: BillDto[] = [
 const Bills = () => {
   const navigate = useNavigate();
   const context = useContext(UserContext);
+  const [bills, setBills] = useState<BillDTO[]>();
+
+  const getAllBills = async () => {
+    let response = await BillService.getAllBills({ page: 1 });
+    console.log(response);
+    if (response.isSuccess) {
+      setBills(response.result.items);
+    }
+  };
+  useEffect(() => {
+    getAllBills();
+  }, []);
   return (
     <div className="w-full h-full flex flex-col items-center p-1">
       <div className="w-full h-[100px] bg-slate-300 flex flex-row-reverse items-center">
@@ -31,16 +46,19 @@ const Bills = () => {
       </div>
       <div className="w-full h-full overflow-y-auto">
         <CustomTable
-          data={context.bills || []}
+          data={bills?.map((b) => mapBillToTableRepresenation(b)) || []}
           headers={[
-            { column: "billId", headerName: "Name" },
+            { column: "billId", headerName: "Id" },
             { column: "date", headerName: "Date" },
             { column: "totalPrice_NoVAT", headerName: "Price" },
+            { column: "totalPrice_VAT", headerName: "Price+VAT" },
+            { column: "buyerCompany", headerName: "Buyer" },
           ]}
           idColumn="billId"
           onActionClick={(id) => {
             console.log(id);
           }}
+          Icon={DeleteIcon}
         />
       </div>
     </div>

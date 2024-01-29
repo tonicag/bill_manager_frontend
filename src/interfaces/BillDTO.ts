@@ -1,12 +1,12 @@
-import { BillEntriesDTO } from "./BillEntryDTO";
+import { BillEntryDTO } from "./BillEntryDTO";
 import { CompanyDTO } from "./CompanyDTO";
 
-export interface BillDto {
+export interface BillDTO {
   billId?: string;
   date?: string;
   totalPrice_NoVAT?: number;
   TotalPrice_VAT?: number;
   sellerCompany?: CompanyDTO;
   buyerCompany?: CompanyDTO;
-  billEntries?: BillEntriesDTO[];
+  billEntries?: BillEntryDTO[];
 }

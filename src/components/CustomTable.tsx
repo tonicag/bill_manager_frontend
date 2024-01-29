@@ -9,12 +9,14 @@ export interface TableProps<T> {
   data: T[];
   idColumn: keyof T;
   onActionClick?: (id: string) => void;
+  Icon?: React.ComponentType<any>;
 }
 const CustomTable: React.FC<TableProps<any>> = ({
   data,
   headers,
   onActionClick,
   idColumn,
+  Icon,
 }) => {
   return (
     <div className="table border-collapse table-auto w-full text-sm">
@@ -51,9 +53,13 @@ const CustomTable: React.FC<TableProps<any>> = ({
                   onClick={() => {
                     onActionClick(r[idColumn]);
                   }}
-                  className="w-[50px] hover:cursor-pointer table-cell text-center border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-100"
+                  className="w-[50px]  table-cell text-center border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-100"
                 >
-                  Delete
+                  {Icon ? (
+                    <Icon className="w-6 h-6 cursor-pointer" />
+                  ) : (
+                    <div className="cursor-pointer">Delete</div>
+                  )}
                 </div>
               ) : (
                 <></>

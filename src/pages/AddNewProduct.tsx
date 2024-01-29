@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { ProductDTO } from "./Products";
-import CustomTable from "../components/Table";
+import CustomTable from "../components/CustomTable";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import ProductsService from "../services/ProductsService";

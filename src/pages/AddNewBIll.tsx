@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import Dropdown from "react-dropdown";
-import CustomTable from "../components/Table";
+import CustomTable from "../components/CustomTable";
 import { ProductDTO } from "./Products";
-import { BillEntriesDTO } from "../interfaces/BillEntryDTO";
+import { BillEntryDTO } from "../interfaces/BillEntryDTO";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import SearchableDropdown from "../components/SearchableDropdown";
@@ -11,6 +11,8 @@ import IPaginationRequest from "../interfaces/IGetAllProducts";
 import { useDebounce } from "usehooks-ts";
 import { CompanyDTO } from "../interfaces/CompanyDTO";
 import CompanyService from "../services/CompanyService";
+import BillService from "../services/BillService";
+import DeleteIcon from "../icons/DeleteIcon";
 var options = [
   {
     label: "Company 1",
@@ -58,7 +60,7 @@ function formatDate(date = new Date()) {
 }
 
 const AddNewBIll = () => {
-  const [billEntries, setBillEntries] = useState<BillEntriesDTO[]>([]);
+  const [billEntries, setBillEntries] = useState<BillEntryDTO[]>([]);
 
   const [productsSearchItems, setProductsSearchItems] = useState<ProductDTO[]>(
     []
@@ -68,6 +70,7 @@ const AddNewBIll = () => {
   >([]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO>();
+  const [selectedCompany, setSelectedCompany] = useState<CompanyDTO>();
 
   const [quantity, setQuantity] = useState<string>("");
 
@@ -94,6 +97,19 @@ const AddNewBIll = () => {
     }
   };
 
+  const saveBill = async () => {
+    if (!selectedCompany || !billEntries.length) {
+      // TODO: Add validation to let the user know
+      return;
+    }
+    const response = await BillService.createBill({
+      userId: "",
+      billEntries: billEntries,
+      buyerCompanyId: context.user?.id,
+      sellerCompanyId: selectedCompany?.id,
+    });
+  };
+
   // Debouncers
   useEffect(() => {
     getProducts({ searchKey: productNameInput });
@@ -117,7 +133,9 @@ const AddNewBIll = () => {
             setCompanyNameInput(val);
           }}
           onSelected={(o) => {
-            console.log(o);
+            setSelectedCompany(
+              companiesSearchItems.find((c) => c.id === o.value)
+            );
           }}
           placeholder={"Product name"}
           options={companiesSearchItems.map((q) => {
@@ -134,7 +152,9 @@ const AddNewBIll = () => {
             return;
           }}
           onSelected={(o) => {
-            console.log(o);
+            setSelectedProduct(
+              productsSearchItems.find((p) => p.id === o.value)
+            );
           }}
           placeholder={"Product name"}
           options={productsSearchItems.map((q) => {
@@ -164,8 +184,9 @@ const AddNewBIll = () => {
                 ...billEntries,
                 {
                   id: billEntries.length.toString(),
-                  productId: selectedProduct?.name,
+                  productId: selectedProduct?.id,
                   quantity: quantity,
+                  billId: "",
                 },
               ]);
               setQuantity("");
@@ -173,8 +194,9 @@ const AddNewBIll = () => {
               setBillEntries([
                 {
                   id: billEntries.length.toString(),
-                  productId: selectedProduct?.name,
+                  productId: selectedProduct?.id,
                   quantity: quantity,
+                  billId: "",
                 },
               ]);
             }
@@ -187,37 +209,14 @@ const AddNewBIll = () => {
         <button
           onClick={(e) => {
             e.preventDefault();
-            if (context.bills?.length) {
-              context.setBills!([
-                ...context.bills,
-                {
-                  billId: context.bills.length.toString(),
-                  billEntries: billEntries,
-                  buyerCompany: { name: context.user?.name },
-                  date: formatDate(),
-                  totalPrice_NoVAT: getRandomInt(500),
-                },
-              ]);
-            } else {
-              context.setBills!([
-                {
-                  billId: "1",
-                  billEntries: billEntries,
-                  buyerCompany: { name: context.user?.name },
-                  date: formatDate(),
-
-                  totalPrice_NoVAT: getRandomInt(500),
-                },
-              ]);
-            }
-            navigate("/dashboard/bills");
+            saveBill();
           }}
           className="bg-green-500 border-1 rounded p-3 mt-10 justify-end"
         >
           Save and create bill!
         </button>
       </div>
-      <div className="w-full h-full overflow-y-auto">
+      <div className="w-full h-full overflow-y-auto bg-slate-700">
         <CustomTable
           data={billEntries || []}
           headers={[
@@ -231,6 +230,7 @@ const AddNewBIll = () => {
             console.log(billEntries);
             setBillEntries(billEntries.filter((be) => be.id !== id));
           }}
+          Icon={DeleteIcon}
         />
       </div>
     </div>

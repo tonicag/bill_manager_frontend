@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { BillDto } from "../interfaces/Bill";
+import { BillDTO } from "../interfaces/BillDTO";
 import { CompanyDTO } from "../interfaces/CompanyDTO";
 import { ProductDTO } from "../pages/Products";
 
@@ -10,7 +10,7 @@ export interface IUserContext {
   setLoggedIn?: (v: boolean) => void;
   products?: ProductDTO[];
   setProducts?: (products: ProductDTO[]) => void;
-  bills?: BillDto[];
-  setBills?: (bills: BillDto[]) => void;
+  bills?: BillDTO[];
+  setBills?: (bills: BillDTO[]) => void;
 }
 export const UserContext = createContext<IUserContext>({ isLoggedIn: false });

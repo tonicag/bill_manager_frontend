@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import CustomTable from "../components/Table";
+import CustomTable from "../components/CustomTable";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import ProductsService from "../services/ProductsService";

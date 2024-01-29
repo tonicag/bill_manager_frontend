@@ -1,4 +1,4 @@
-export interface BillEntriesDTO {
+export interface BillEntryDTO {
   id?: string;
   billId?: string;
   productId?: string;

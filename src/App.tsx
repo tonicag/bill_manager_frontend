@@ -11,13 +11,13 @@ import Bills from "./pages/Bills";
 import AddNewBIll from "./pages/AddNewBIll";
 import AuthenticatedRoute from "./security/AuthenticatedRoute";
 import { UserContext } from "./context/UserContext";
-import { BillDto } from "./interfaces/Bill";
+import { BillDTO } from "./interfaces/BillDTO";
 import { CompanyDTO } from "./interfaces/CompanyDTO";
 const App: React.FC = () => {
   const [user, setUser] = useState<CompanyDTO>({});
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
   const [products, setProducts] = useState<ProductDTO[]>([]);
-  const [bills, setBills] = useState<BillDto[]>([]);
+  const [bills, setBills] = useState<BillDTO[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const initWebsite = async (user: string) => {
